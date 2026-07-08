@@ -20,6 +20,9 @@ jobs:
 
     - name: Run High Accuracy OCR
       run: |
+        # Reassemble the split pieces back into the full Biology book
+        cat part_* > Biology_Class_9-10.pdf
+        
         for file in *.pdf; do
           if [ -f "$file" ]; then
             echo "Processing $file..."
