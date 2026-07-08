@@ -1,0 +1,34 @@
+name: Cloud PDF OCR
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  convert-pdf:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Install OCR Tools and Language Packs
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y ocrmypdf tesseract-ocr-eng tesseract-ocr-ben
+
+    - name: Run High Accuracy OCR
+      run: |
+        for file in *.pdf; do
+          if [ -f "$file" ]; then
+            echo "Processing $file..."
+            ocrmypdf --force-ocr --redo-ocr --deskew --clean -l eng+ben "$file" "readable_$file"
+          fi
+        done
+
+    - name: Upload Finished Readable PDF
+      uses: actions/upload-artifact@v4
+      with:
+        name: readable-textbooks
+        path: readable_*.pdf
